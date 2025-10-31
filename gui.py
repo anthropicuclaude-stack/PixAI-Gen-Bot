@@ -8,44 +8,38 @@ import re
 import shutil
 from crawler import PixaiCrawler
 
-import os, sys, shutil
+import os, sys, shutil, subprocess
 
+# --- 경로 설정 ---
 # BASE: frozen(exe)면 exe 위치, 아니면 소스 위치
 BASE = os.path.dirname(sys.executable) if getattr(sys, "frozen", False) else os.path.dirname(__file__)
 
+# 사용자 데이터 저장을 위한 전용 폴더 (AppData 사용)
+APP_USER_DIR = os.path.join(os.getenv("APPDATA") or os.path.expanduser("~"), "PixAI-Gen-Bot")
+os.makedirs(APP_USER_DIR, exist_ok=True)
+
+# 실제 읽고 쓸 파일들의 최종 경로 (이제 AppData를 가리킴)
+PROMPT_FILE = os.path.join(APP_USER_DIR, "prompts.json")
+MODEL_PRESETS_FILE = os.path.join(APP_USER_DIR, "model_presets.json")
+USER_DATA = os.path.join(APP_USER_DIR, "playwright_user_data") # Playwright 사용자 데이터
+
+# --- 최초 실행 시 사용자 파일 초기화 ---
+def initialize_user_file(user_file_path, default_file_name):
+    """사용자 설정 파일이 없으면, 패키지에 포함된 기본 파일을 복사합니다."""
+    if not os.path.exists(user_file_path):
+        default_file_path = os.path.join(BASE, default_file_name)
+        if os.path.exists(default_file_path):
+            try:
+                shutil.copy2(default_file_path, user_file_path)
+                print(f"Initialized user file: {user_file_path}")
+            except Exception as e:
+                print(f"사용자 파일 초기화 실패 {user_file_path}: {e}", file=sys.stderr)
+
+initialize_user_file(PROMPT_FILE, "prompts.json")
+initialize_user_file(MODEL_PRESETS_FILE, "model_presets.json")
+
 # (선택) 상대경로 동작을 원하면 활성화
 os.chdir(BASE)
-
-# 외부 오버라이드 허용
-PROMPT_FILE = os.environ.get("PROMPT_FILE", os.path.join(BASE, "prompts.json"))
-MODEL_PRESETS_FILE = os.environ.get("MODEL_PRESETS_FILE", os.path.join(BASE, "model_presets.json"))
-USER_DATA = os.environ.get("PLAYWRIGHT_USER_DATA",
-                           os.path.join(os.getenv("APPDATA") or os.path.expanduser("~"),
-                                        "PixAI-Gen-Bot", "playwright_user_data"))
-BROWSERS_PATH = os.environ.get("PLAYWRIGHT_BROWSERS_PATH", os.path.join(BASE, "browsers"))
-os.environ["PLAYWRIGHT_BROWSERS_PATH"] = BROWSERS_PATH
-
-# 디렉토리 보장
-os.makedirs(os.path.dirname(PROMPT_FILE), exist_ok=True)
-os.makedirs(os.path.dirname(MODEL_PRESETS_FILE), exist_ok=True)
-# os.makedirs(USER_DATA, exist_ok=True)
-os.makedirs(BROWSERS_PATH, exist_ok=True)
-
-# prompts.json 존재하지 않으면 배포된 기본값을 복사
-_default = os.path.join(BASE, "prompts.json")
-if not os.path.exists(PROMPT_FILE) and os.path.exists(_default):
-    try:
-        shutil.copy2(_default, PROMPT_FILE)
-    except PermissionError:
-        # 안전하게 무시하거나 로그 남기기
-        pass
-_default_presets = os.path.join(BASE, "model_presets.json")
-if not os.path.exists(MODEL_PRESETS_FILE) and os.path.exists(_default_presets):
-    try:
-        shutil.copy2(_default_presets, MODEL_PRESETS_FILE)
-    except PermissionError:
-        # 안전하게 무시하거나 로그 남기기
-        pass
 
 class CrawlerManager:
     """

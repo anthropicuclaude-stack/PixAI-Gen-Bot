@@ -1,6 +1,5 @@
 import os
 import asyncio
-import json
 import time
 from datetime import datetime
 from urllib.parse import urlparse
