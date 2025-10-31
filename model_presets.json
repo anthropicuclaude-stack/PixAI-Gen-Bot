@@ -1,0 +1,9 @@
+[
+    {
+        "name": "테스트 프리셋",
+        "model_name": "Kodo's Personal Models",
+        "model_version": "Blessing of Yig - A1A",
+        "lora": "Sketch:0.5, Kohei Horikoshi / My Hero Academia style (Pony):0.3",
+        "trigger_words": "sketch, flat color, soft skin, sketch lines,Kohei Horikoshi, My Hero Academia"
+    }
+]

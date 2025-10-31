@@ -1,0 +1,1085 @@
+{
+    "groups": [
+        {
+            "name": "기본",
+            "presets": []
+        },
+        {
+            "name": "캐릭터 프리셋",
+            "presets": [
+                {
+                    "name": "신사 무녀",
+                    "prompt": "White robe,Japanese shrine, looking at the viewer, long black hair, unfocused black eyes, large breasts, long body, tall stature, bottom view, front shot, priestess temple,\ncowboy shot"
+                },
+                {
+                    "name": "드레곤 메이드",
+                    "prompt": "dragon woman,maid outfit, holding a plate in one hand, annoyed expression, cafe background"
+                },
+                {
+                    "name": "데빌 걸",
+                    "prompt": "1girl, devil girl ,fangs,claws, Knee Socks,"
+                },
+                {
+                    "name": "루뱌 - 장미의 요정",
+                    "prompt": "1girl, solo, pale skin, body blush,(holding red rose:1.4), (rose in hair:1.3), (falling rose petals:1.5),(surrounded by roses:1.3), rose garden background,romantic, elegant, beautiful, dreamy atmosphere"
+                },
+                {
+                    "name": "루뱌 - 천사 소녀",
+                    "prompt": "(ethereal white wedding dress:1.3), made of shimmering silk and delicate lace, flowing fabrics, adorned with pearls,(large, soft white feathered wings:1.8), (glowing golden halo:1.3), radiant light emanating from body"
+                },
+                {
+                    "name": "루뱌 - 귀족 영애",
+                    "prompt": "black hairband, hair ornament, earrings, intricate dress, dark blue dress, white dress, off shoulder, corset, puffy sleeves, black sleeves, frills, choker"
+                },
+                {
+                    "name": "루뱌 - 귀족 영애 2",
+                    "prompt": "hat, wide-brim hat, flower hat, roses on hat, black ribbon, white dress, long sleeves, gloves"
+                },
+                {
+                    "name": "루뱌 - 세일러복의 소녀",
+                    "prompt": "white sailor collar, no buttons, blue necktie, frilly short skirt, white lace trim, puffy blue skirt layer, layered design"
+                },
+                {
+                    "name": "루뱌 - starry night dress",
+                    "prompt": "starry night dress, star pattern dress, translucent veil, star patterns, (black veil:1.2), silver ornaments, constellation ornaments, constellation jewelry"
+                }
+            ]
+        },
+        {
+            "name": "성별 프리셋(병합 전용)",
+            "presets": [
+                {
+                    "name": "소년",
+                    "prompt": "boy"
+                },
+                {
+                    "name": "남성",
+                    "prompt": "man"
+                },
+                {
+                    "name": "소녀",
+                    "prompt": "girl"
+                },
+                {
+                    "name": "여성",
+                    "prompt": "woman"
+                },
+                {
+                    "name": "중성",
+                    "prompt": "androgynous"
+                }
+            ]
+        },
+        {
+            "name": "표정 프리셋(병합 전용)",
+            "presets": [
+                {
+                    "name": "무표정",
+                    "prompt": "expressionless expression"
+                },
+                {
+                    "name": "유혹적인 표정",
+                    "prompt": "seductive expression"
+                },
+                {
+                    "name": "유혹적인 미소",
+                    "prompt": "seductive smile"
+                },
+                {
+                    "name": "의미심장한 표정",
+                    "prompt": "meaningful expression"
+                },
+                {
+                    "name": "웃는 표정",
+                    "prompt": "smiling expression"
+                },
+                {
+                    "name": "우는 표정",
+                    "prompt": "crying expression"
+                },
+                {
+                    "name": "화난 표정",
+                    "prompt": "annoyed expression"
+                },
+                {
+                    "name": "놀란 표정",
+                    "prompt": "surprised expression"
+                },
+                {
+                    "name": "행복한 표정",
+                    "prompt": "happy expression"
+                },
+                {
+                    "name": "슬픈 표정",
+                    "prompt": "sad expression"
+                },
+                {
+                    "name": "창피한 표정",
+                    "prompt": "embarrassed expression"
+                },
+                {
+                    "name": "졸린 표정",
+                    "prompt": "sleepy expression"
+                },
+                {
+                    "name": "진지한 표정",
+                    "prompt": "serious expression"
+                },
+                {
+                    "name": "무서운 표정",
+                    "prompt": "scared expression"
+                },
+                {
+                    "name": "당황한 표정",
+                    "prompt": "flustered expression"
+                },
+                {
+                    "name": "집중하는 표정",
+                    "prompt": "focused expression"
+                },
+                {
+                    "name": "혼란스러운 표정",
+                    "prompt": "confused expression"
+                },
+                {
+                    "name": "지친 표정",
+                    "prompt": "weary expression"
+                },
+                {
+                    "name": "결심한 표정",
+                    "prompt": "determined expression"
+                },
+                {
+                    "name": "편안한 표정",
+                    "prompt": "relaxed expression"
+                },
+                {
+                    "name": "장난스러운 표정",
+                    "prompt": "playful expression"
+                },
+                {
+                    "name": "수줍은 표정",
+                    "prompt": "shy expression"
+                },
+                {
+                    "name": "자신감 있는 표정",
+                    "prompt": "confident expression"
+                },
+                {
+                    "name": "심각한 표정",
+                    "prompt": "grave expression"
+                },
+                {
+                    "name": "비웃는 표정",
+                    "prompt": "smirking expression"
+                },
+                {
+                    "name": "만족스러운 표정",
+                    "prompt": "satisfied expression"
+                },
+                {
+                    "name": "지적인 표정",
+                    "prompt": "intelligent expression"
+                },
+                {
+                    "name": "열정적인 표정",
+                    "prompt": "passionate expression"
+                },
+                {
+                    "name": "냉정한 표정",
+                    "prompt": "calm expression"
+                },
+                {
+                    "name": "결연한 표정",
+                    "prompt": "resolute expression"
+                },
+                {
+                    "name": "우울한 표정",
+                    "prompt": "melancholic expression"
+                },
+                {
+                    "name": "흥미로운 표정",
+                    "prompt": "intrigued expression"
+                },
+                {
+                    "name": "감동한 표정",
+                    "prompt": "moved expression"
+                },
+                {
+                    "name": "경멸하는 표정",
+                    "prompt": "contemptuous expression"
+                },
+                {
+                    "name": "놀리는 표정",
+                    "prompt": "teasing expression"
+                },
+                {
+                    "name": "걱정하는 표정",
+                    "prompt": "worried expression"
+                },
+                {
+                    "name": "흥분한 표정",
+                    "prompt": "excited expression"
+                }
+            ]
+        },
+        {
+            "name": "포즈 프리셋(병합 전용)",
+            "presets": [
+                {
+                    "name": "앉아있는 자세",
+                    "prompt": "sitting pose"
+                },
+                {
+                    "name": "서있는 자세",
+                    "prompt": "standing pose"
+                },
+                {
+                    "name": "걷는 자세",
+                    "prompt": "walking pose"
+                },
+                {
+                    "name": "달리는 자세",
+                    "prompt": "running pose"
+                },
+                {
+                    "name": "점프하는 자세",
+                    "prompt": "jumping pose"
+                },
+                {
+                    "name": "누워있는 자세",
+                    "prompt": "lying down pose"
+                },
+                {
+                    "name": "손을 흔드는 자세",
+                    "prompt": "waving pose"
+                },
+                {
+                    "name": "춤추는 자세",
+                    "prompt": "dancing pose"
+                },
+                {
+                    "name": "생각하는 자세",
+                    "prompt": "thinking pose"
+                },
+                {
+                    "name": "뒤돌아보는 자세",
+                    "prompt": "looking back pose"
+                },
+                {
+                    "name": "앉아서 다리 꼬는 자세",
+                    "prompt": "sitting cross-legged pose"
+                },
+                {
+                    "name": "무릎 꿇는 자세",
+                    "prompt": "kneeling pose"
+                }
+            ]
+        },
+        {
+            "name": "촬영 각도 프리셋(병합 전용)",
+            "presets": [
+                {
+                    "name": "전신 샷",
+                    "prompt": "full body"
+                },
+                {
+                    "name": "상체 중심 샷",
+                    "prompt": "upper body"
+                },
+                {
+                    "name": "얼굴 중심 샷",
+                    "prompt": "headshot"
+                },
+                {
+                    "name": "옆모습 샷",
+                    "prompt": "profile shot"
+                },
+                {
+                    "name": "바닥에서 올려다보는 샷",
+                    "prompt": "low angle shot"
+                },
+                {
+                    "name": "위에서 내려다보는 샷",
+                    "prompt": "high angle shot"
+                },
+                {
+                    "name": "클로즈업 샷",
+                    "prompt": "close-up shot"
+                },
+                {
+                    "name": "와이드 앵글 샷",
+                    "prompt": "wide angle shot"
+                },
+                {
+                    "name": "오버 더 숄더 샷",
+                    "prompt": "over the shoulder shot"
+                },
+                {
+                    "name": "버드 아이 뷰 샷",
+                    "prompt": "bird's eye view shot"
+                }
+            ]
+        },
+        {
+            "name": "종족 프리셋(병합 전용)",
+            "presets": [
+                {
+                    "name": "인간",
+                    "prompt": "humen"
+                },
+                {
+                    "name": "엘프",
+                    "prompt": "elf"
+                },
+                {
+                    "name": "요정",
+                    "prompt": "fairy"
+                },
+                {
+                    "name": "드래곤",
+                    "prompt": "dragon"
+                },
+                {
+                    "name": "고블린",
+                    "prompt": "goblin"
+                },
+                {
+                    "name": "좀비",
+                    "prompt": "zombie"
+                },
+                {
+                    "name": "마녀",
+                    "prompt": "witch"
+                },
+                {
+                    "name": "천사",
+                    "prompt": "angel"
+                },
+                {
+                    "name": "악마(데몬)",
+                    "prompt": "demon"
+                },
+                {
+                    "name": "요괴",
+                    "prompt": "yokai"
+                },
+                {
+                    "name": "구미호",
+                    "prompt": "gumiho"
+                },
+                {
+                    "name": "여우",
+                    "prompt": "fox"
+                },
+                {
+                    "name": "늑대인간",
+                    "prompt": "wolf"
+                },
+                {
+                    "name": "고양이",
+                    "prompt": "cat"
+                },
+                {
+                    "name": "강아지",
+                    "prompt": "dog"
+                },
+                {
+                    "name": "인어",
+                    "prompt": "mermaid"
+                }
+            ]
+        },
+        {
+            "name": "소녀 종족 프리셋(병합 전용)",
+            "presets": [
+                {
+                    "name": "인간 소녀",
+                    "prompt": "humen girl"
+                },
+                {
+                    "name": "엘프 소녀",
+                    "prompt": "elf girl"
+                },
+                {
+                    "name": "요정 소녀",
+                    "prompt": "fairy girl"
+                },
+                {
+                    "name": "드래곤 소녀",
+                    "prompt": "dragon girl"
+                },
+                {
+                    "name": "고블린 소녀",
+                    "prompt": "goblin girl"
+                },
+                {
+                    "name": "좀비 소녀",
+                    "prompt": "zombie girl"
+                },
+                {
+                    "name": "마녀 소녀",
+                    "prompt": "witch girl"
+                },
+                {
+                    "name": "천사 소녀",
+                    "prompt": "angel girl"
+                },
+                {
+                    "name": "악마(데몬) 소녀",
+                    "prompt": "demon girl"
+                },
+                {
+                    "name": "요괴 소녀",
+                    "prompt": "yokai girl"
+                },
+                {
+                    "name": "구미호 소녀",
+                    "prompt": "gumiho girl"
+                },
+                {
+                    "name": "여우 소녀",
+                    "prompt": "fox girl"
+                },
+                {
+                    "name": "늑대인간 소녀",
+                    "prompt": "wolf girl"
+                },
+                {
+                    "name": "고양이 소녀",
+                    "prompt": "cat girl"
+                },
+                {
+                    "name": "강아지 소녀",
+                    "prompt": "dog girl"
+                },
+                {
+                    "name": "인어 소녀",
+                    "prompt": "mermaid girl"
+                }
+            ]
+        },
+        {
+            "name": "여성 종족 프리셋(병합 전용)",
+            "presets": [
+                {
+                    "name": "인간 여성",
+                    "prompt": "humen women"
+                },
+                {
+                    "name": "엘프 여성",
+                    "prompt": "elf women"
+                },
+                {
+                    "name": "요정 여성",
+                    "prompt": "fairy women"
+                },
+                {
+                    "name": "드래곤 여성",
+                    "prompt": "dragon women"
+                },
+                {
+                    "name": "고블린 여성",
+                    "prompt": "goblin women"
+                },
+                {
+                    "name": "좀비 여성",
+                    "prompt": "zombie women"
+                },
+                {
+                    "name": "마녀 여성",
+                    "prompt": "witch women"
+                },
+                {
+                    "name": "천사 여성",
+                    "prompt": "angel women"
+                },
+                {
+                    "name": "악마(데몬) 여성",
+                    "prompt": "demon women"
+                },
+                {
+                    "name": "요괴 여성",
+                    "prompt": "yokai women"
+                },
+                {
+                    "name": "구미호 여성",
+                    "prompt": "gumiho women"
+                },
+                {
+                    "name": "여우 여성",
+                    "prompt": "fox women"
+                },
+                {
+                    "name": "늑대인간 여성",
+                    "prompt": "wolf women"
+                },
+                {
+                    "name": "고양이 여성",
+                    "prompt": "cat women"
+                },
+                {
+                    "name": "강아지 여성",
+                    "prompt": "dog women"
+                },
+                {
+                    "name": "인어 여성",
+                    "prompt": "mermaid women"
+                }
+            ]
+        },
+        {
+            "name": "의상 프리셋(병합 전용)",
+            "presets": [
+                {
+                    "name": "일상복",
+                    "prompt": "casual clothes"
+                },
+                {
+                    "name": "정장",
+                    "prompt": "formal suit"
+                },
+                {
+                    "name": "운동복",
+                    "prompt": "sportswear"
+                },
+                {
+                    "name": "수영복",
+                    "prompt": "swimsuit"
+                },
+                {
+                    "name": "전통 의상",
+                    "prompt": "traditional clothing"
+                },
+                {
+                    "name": "판타지 의상",
+                    "prompt": "fantasy outfit"
+                },
+                {
+                    "name": "미래형 의상",
+                    "prompt": "futuristic outfit"
+                },
+                {
+                    "name": "캐주얼 드레스",
+                    "prompt": "casual dress"
+                },
+                {
+                    "name": "파티 복장",
+                    "prompt": "party outfit"
+                },
+                {
+                    "name": "직장 복장",
+                    "prompt": "work attire"
+                },
+                {
+                    "name": "겨울 의상",
+                    "prompt": "winter clothing"
+                },
+                {
+                    "name": "여름 의상",
+                    "prompt": "summer clothing"
+                },
+                {
+                    "name": "가을 의상",
+                    "prompt": "autumn clothing"
+                },
+                {
+                    "name": "봄 의상",
+                    "prompt": "spring clothing"
+                },
+                {
+                    "name": "학교 교복",
+                    "prompt": "school uniform"
+                },
+                {
+                    "name": "군복",
+                    "prompt": "military uniform"
+                },
+                {
+                    "name": "경찰 제복",
+                    "prompt": "police uniform"
+                },
+                {
+                    "name": "간호사 복장",
+                    "prompt": "nurse outfit"
+                },
+                {
+                    "name": "요리사 복장",
+                    "prompt": "chef outfit"
+                },
+                {
+                    "name": "메이드 복장",
+                    "prompt": "maid outfit"
+                },
+                {
+                    "name": "돌핀 팬츠",
+                    "prompt": "dolphin shorts"
+                },
+                {
+                    "name": "하이 웨이스트 팬츠",
+                    "prompt": "high waist pants"
+                },
+                {
+                    "name": "청바지",
+                    "prompt": "jeans"
+                },
+                {
+                    "name": "레깅스",
+                    "prompt": "leggings"
+                },
+                {
+                    "name": "미니스커트",
+                    "prompt": "miniskirt"
+                },
+                {
+                    "name": "플레어 스커트",
+                    "prompt": "flare skirt"
+                },
+                {
+                    "name": "A라인 스커트",
+                    "prompt": "A-line skirt"
+                },
+                {
+                    "name": "펜슬 스커트",
+                    "prompt": "pencil skirt"
+                },
+                {
+                    "name": "맥시 스커트",
+                    "prompt": "maxi skirt"
+                },
+                {
+                    "name": "튜브탑",
+                    "prompt": "tube top"
+                },
+                {
+                    "name": "크롭탑",
+                    "prompt": "crop top"
+                },
+                {
+                    "name": "오프숄더 탑",
+                    "prompt": "off-shoulder top"
+                },
+                {
+                    "name": "블라우스",
+                    "prompt": "blouse"
+                },
+                {
+                    "name": "셔츠",
+                    "prompt": "shirt"
+                },
+                {
+                    "name": "후드티",
+                    "prompt": "hoodie"
+                },
+                {
+                    "name": "재킷",
+                    "prompt": "jacket"
+                },
+                {
+                    "name": "코트",
+                    "prompt": "coat"
+                },
+                {
+                    "name": "타이츠",
+                    "prompt": "tights"
+                },
+                {
+                    "name": "스타킹",
+                    "prompt": "stockings"
+                },
+                {
+                    "name": "니삭스",
+                    "prompt": "knee socks"
+                },
+                {
+                    "name": "하이힐",
+                    "prompt": "high heels"
+                },
+                {
+                    "name": "운동화",
+                    "prompt": "sneakers"
+                },
+                {
+                    "name": "샌들",
+                    "prompt": "sandals"
+                },
+                {
+                    "name": "부츠",
+                    "prompt": "boots"
+                },
+                {
+                    "name": "플랫 슈즈",
+                    "prompt": "flat shoes"
+                },
+                {
+                    "name": "로퍼",
+                    "prompt": "loafers"
+                },
+                {
+                    "name": "발레리나 슈즈",
+                    "prompt": "ballet shoes"
+                },
+                {
+                    "name": "슬리퍼",
+                    "prompt": "slippers"
+                },
+                {
+                    "name": "플랫폼 슈즈",
+                    "prompt": "platform shoes"
+                }
+            ]
+        },
+        {
+            "name": "악세서리 프리셋(병합 전용)",
+            "presets": [
+                {
+                    "name": "안경",
+                    "prompt": "glasses"
+                },
+                {
+                    "name": "모자",
+                    "prompt": "hat"
+                },
+                {
+                    "name": "목걸이",
+                    "prompt": "necklace"
+                },
+                {
+                    "name": "귀걸이",
+                    "prompt": "earrings"
+                },
+                {
+                    "name": "팔찌",
+                    "prompt": "bracelet"
+                },
+                {
+                    "name": "반지",
+                    "prompt": "ring"
+                },
+                {
+                    "name": "시계",
+                    "prompt": "watch"
+                },
+                {
+                    "name": "벨트",
+                    "prompt": "belt"
+                },
+                {
+                    "name": "스카프",
+                    "prompt": "scarf"
+                },
+                {
+                    "name": "장갑",
+                    "prompt": "gloves"
+                },
+                {
+                    "name": "헤어밴드",
+                    "prompt": "headband"
+                },
+                {
+                    "name": "리본",
+                    "prompt": "ribbon"
+                },
+                {
+                    "name": "타이",
+                    "prompt": "tie"
+                },
+                {
+                    "name": "브로치",
+                    "prompt": "brooch"
+                },
+                {
+                    "name": "가방",
+                    "prompt": "bag"
+                },
+                {
+                    "name": "우산",
+                    "prompt": "umbrella"
+                },
+                {
+                    "name": "헤드폰",
+                    "prompt": "headphones"
+                },
+                {
+                    "name": "마스크",
+                    "prompt": "mask"
+                },
+                {
+                    "name": "귀마개",
+                    "prompt": "earmuffs"
+                },
+                {
+                    "name": "넥타이핀",
+                    "prompt": "tie clip"
+                },
+                {
+                    "name": "꼬리",
+                    "prompt": "tail"
+                },
+                {
+                    "name": "날개",
+                    "prompt": "wings"
+                },
+                {
+                    "name": "뿔",
+                    "prompt": "horns"
+                },
+                {
+                    "name": "비늘",
+                    "prompt": "scales"
+                },
+                {
+                    "name": "문신",
+                    "prompt": "tattoo"
+                },
+                {
+                    "name": "피어싱",
+                    "prompt": "piercing"
+                },
+                {
+                    "name": "헤어 클립",
+                    "prompt": "hair clip"
+                },
+                {
+                    "name": "헤어핀",
+                    "prompt": "hairpin"
+                },
+                {
+                    "name": "왕관",
+                    "prompt": "crown"
+                },
+                {
+                    "name": "티아라",
+                    "prompt": "tiara"
+                }
+            ]
+        },
+        {
+            "name": "헤어스타일 프리셋(병합 전용)",
+            "presets": [
+                {
+                    "name": "긴 머리",
+                    "prompt": "long hair"
+                },
+                {
+                    "name": "짧은 머리",
+                    "prompt": "short hair"
+                },
+                {
+                    "name": "곱슬 머리",
+                    "prompt": "curly hair"
+                },
+                {
+                    "name": "생머리",
+                    "prompt": "straight hair"
+                },
+                {
+                    "name": "포니테일",
+                    "prompt": "ponytail"
+                },
+                {
+                    "name": "땋은 머리",
+                    "prompt": "braided hair"
+                },
+                {
+                    "name": "업스타일",
+                    "prompt": "updo hairstyle"
+                },
+                {
+                    "name": "앞머리",
+                    "prompt": "bangs"
+                },
+                {
+                    "name": "양갈래 머리",
+                    "prompt": "pigtails"
+                },
+                {
+                    "name": "반묶음 머리",
+                    "prompt": "half-up hairstyle"
+                },
+                {
+                    "name": "레이어드 컷",
+                    "prompt": "layered cut"
+                },
+                {
+                    "name": "언더컷",
+                    "prompt": "undercut"
+                },
+                {
+                    "name": "볼륨 있는 머리",
+                    "prompt": "voluminous hair"
+                },
+                {
+                    "name": "자연스러운 머리",
+                    "prompt": "natural hair"
+                }
+            ]
+        },
+        {
+            "name": "분위기 프리셋(병합 전용",
+            "presets": [
+                {
+                    "name": "밝은 분위기",
+                    "prompt": "bright atmosphere"
+                },
+                {
+                    "name": "어두운 분위기",
+                    "prompt": "dark atmosphere"
+                },
+                {
+                    "name": "로맨틱한 분위기",
+                    "prompt": "romantic atmosphere"
+                },
+                {
+                    "name": "신비로운 분위기",
+                    "prompt": "mysterious atmosphere"
+                },
+                {
+                    "name": "긴장감 있는 분위기",
+                    "prompt": "tense atmosphere"
+                },
+                {
+                    "name": "평화로운 분위기",
+                    "prompt": "peaceful atmosphere"
+                },
+                {
+                    "name": "활기찬 분위기",
+                    "prompt": "lively atmosphere"
+                },
+                {
+                    "name": "우울한 분위기",
+                    "prompt": "melancholic atmosphere"
+                },
+                {
+                    "name": "야릇한 분위기",
+                    "prompt": "eerie atmosphere"
+                },
+                {
+                    "name": "섹시한 분위기",
+                    "prompt": "sexy atmosphere"
+                },
+                {
+                    "name": "관능적인 분위기",
+                    "prompt": "sensual atmosphere"
+                },
+                {
+                    "name": "유혹적인 분위기",
+                    "prompt": "seductive atmosphere"
+                }
+            ]
+        },
+        {
+            "name": "기타 프리셋(병합 전용)",
+            "presets": [
+                {
+                    "name": "환상적인 배경",
+                    "prompt": "fantasy background"
+                },
+                {
+                    "name": "사이버펑크 배경",
+                    "prompt": "cyberpunk background"
+                },
+                {
+                    "name": "자연 풍경 배경",
+                    "prompt": "nature scenery background"
+                },
+                {
+                    "name": "미래 도시 배경",
+                    "prompt": "futuristic city background"
+                },
+                {
+                    "name": "우주 배경",
+                    "prompt": "space background"
+                },
+                {
+                    "name": "중세 시대 배경",
+                    "prompt": "medieval background"
+                },
+                {
+                    "name": "스팀펑크 배경",
+                    "prompt": "steampunk background"
+                },
+                {
+                    "name": "포스트 아포칼립스 배경",
+                    "prompt": "post-apocalyptic background"
+                },
+                {
+                    "name": "동화 속 배경",
+                    "prompt": "fairy tale background"
+                },
+                {
+                    "name": "초현실주의 배경",
+                    "prompt": "surreal background"
+                },
+                {
+                    "name": "고딕 스타일 배경",
+                    "prompt": "gothic style background"
+                },
+                {
+                    "name": "낮은 조명",
+                    "prompt": "low lighting"
+                },
+                {
+                    "name": "부드러운 조명",
+                    "prompt": "soft lighting"
+                },
+                {
+                    "name": "극적인 조명",
+                    "prompt": "dramatic lighting"
+                },
+                {
+                    "name": "자연광",
+                    "prompt": "natural lighting"
+                },
+                {
+                    "name": "스튜디오 조명",
+                    "prompt": "studio lighting"
+                },
+                {
+                    "name": "황혼",
+                    "prompt": "dusk"
+                },
+                {
+                    "name": "새벽",
+                    "prompt": "dawn"
+                },
+                {
+                    "name": "비오는 날씨",
+                    "prompt": "rainy weather"
+                },
+                {
+                    "name": "눈오는 날씨",
+                    "prompt": "snowy weather"
+                },
+                {
+                    "name": "안개 낀 날씨",
+                    "prompt": "foggy weather"
+                },
+                {
+                    "name": "맑은 날씨",
+                    "prompt": "clear weather"
+                },
+                {
+                    "name": "흐린 날씨",
+                    "prompt": "cloudy weather"
+                },
+                {
+                    "name": "화창한 날씨",
+                    "prompt": "sunny weather"
+                },
+                {
+                    "name": "황금 시간대",
+                    "prompt": "golden hour"
+                },
+                {
+                    "name": "실내 장면",
+                    "prompt": "indoor scene"
+                },
+                {
+                    "name": "야외 장면",
+                    "prompt": "outdoor scene"
+                }
+            ]
+        }
+    ]
+}
