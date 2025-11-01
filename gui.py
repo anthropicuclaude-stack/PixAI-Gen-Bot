@@ -7,12 +7,21 @@ import json
 import re
 import shutil
 from crawler import PixaiCrawler
+import os, sys, shutil
 
-import os, sys, shutil, subprocess
+if getattr(sys, 'frozen', False):
+    # When running as a bundled app, tell Playwright to use the browsers installed in the user's AppData
+    os.environ['PLAYWRIGHT_BROWSERS_PATH'] = os.path.join(os.path.expanduser("~"), "AppData", "Local", "ms-playwright")
 
 # --- 경로 설정 ---
 # BASE: frozen(exe)면 exe 위치, 아니면 소스 위치
-BASE = os.path.dirname(sys.executable) if getattr(sys, "frozen", False) else os.path.dirname(__file__)
+if getattr(sys, "frozen", False):
+    BASE = os.path.dirname(sys.executable)
+    # PyInstaller가 압축 해제한 임시 폴더 (_MEIPASS)
+    BUNDLE_DIR = sys._MEIPASS
+else:
+    BASE = os.path.dirname(__file__)
+    BUNDLE_DIR = BASE
 
 # 사용자 데이터 저장을 위한 전용 폴더 (AppData 사용)
 APP_USER_DIR = os.path.join(os.getenv("APPDATA") or os.path.expanduser("~"), "PixAI-Gen-Bot")
@@ -27,13 +36,17 @@ USER_DATA = os.path.join(APP_USER_DIR, "playwright_user_data") # Playwright 사�
 def initialize_user_file(user_file_path, default_file_name):
     """사용자 설정 파일이 없으면, 패키지에 포함된 기본 파일을 복사합니다."""
     if not os.path.exists(user_file_path):
-        default_file_path = os.path.join(BASE, default_file_name)
+        # PyInstaller로 패키징된 경우 BUNDLE_DIR(_MEIPASS)에서 읽음
+        default_file_path = os.path.join(BUNDLE_DIR, default_file_name)
+        
         if os.path.exists(default_file_path):
             try:
                 shutil.copy2(default_file_path, user_file_path)
                 print(f"Initialized user file: {user_file_path}")
             except Exception as e:
                 print(f"사용자 파일 초기화 실패 {user_file_path}: {e}", file=sys.stderr)
+        else:
+            print(f"기본 파일을 찾을 수 없습니다: {default_file_path}", file=sys.stderr)
 
 initialize_user_file(PROMPT_FILE, "prompts.json")
 initialize_user_file(MODEL_PRESETS_FILE, "model_presets.json")
@@ -208,6 +221,14 @@ class Tooltip:
         self.tooltip_window = None
         self.widget.bind("<Enter>", self.show_tooltip)
         self.widget.bind("<Leave>", self.hide_tooltip)
+        self.widget.bind("<ButtonPress>", self.hide_tooltip) # Add this to hide on click
+
+    def update_text(self, new_text):
+        self.text = new_text
+        if self.tooltip_window: # If tooltip is currently visible, update its content
+            for child in self.tooltip_window.winfo_children():
+                if isinstance(child, tk.Label):
+                    child.config(text=self.text)
 
     def show_tooltip(self, event=None):
         if self.tooltip_window or not self.text:
@@ -334,6 +355,8 @@ class App(tk.Tk):
         self.checked_items = set()
         self.group_expanded_state = {}
         self.checked_keys = set()
+        self.added_preset_keys = set()
+        self.add_remove_tooltips = {}
 
         self.BOOSTER_OPTIONS = ["얼굴 수정", "고해상도", "품질 태그"]
         self.booster_vars = {}
@@ -537,19 +560,26 @@ class App(tk.Tk):
                         # 마우스 호버로 프리뷰 표시
                         pchk.bind("<Enter>", lambda e, prm=pprompt: self.show_preset_preview(prm))
                         pchk.bind("<Leave>", lambda e: self.clear_preset_preview())
-                        # 더블 클릭으로 프롬프트 로드
-                        pchk.bind("<Double-1>", lambda e, prm=pprompt: self._load_prompt_into_entry(prm))
 
-                        # 보조 라벨(프롬프트 Load 설명)
-                        lbl = tk.Label(item_frame, text="(더블클릭으로 로드)", cursor="hand2", bg=canvas_bg)
-                        lbl.pack(side=tk.LEFT, padx=8)
-                        Tooltip(lbl, "더블클릭하면 이 프리셋의 프롬프트를 오른쪽 입력창으로 복사합니다.")
-                        lbl.bind("<Double-1>", lambda e, prm=pprompt: self._load_prompt_into_entry(prm))
-                        lbl.bind("<Enter>", lambda e, prm=pprompt: self.show_preset_preview(prm))
-                        lbl.bind("<Leave>", lambda e: self.clear_preset_preview())
+                        # Button container
+                        btn_container = tk.Frame(item_frame, bg=canvas_bg)
+                        btn_container.pack(side=tk.RIGHT, padx=8) # Changed to tk.RIGHT for alignment
 
-                        self.preset_widgets[p_key] = item_frame
+                        overwrite_btn = ttk.Button(btn_container, text="덮어쓰기", width=8, command=lambda prm=pprompt: self._load_prompt_into_entry(prm))
+                        overwrite_btn.pack(side=tk.LEFT)
+                        Tooltip(overwrite_btn, "이 프리셋의 프롬프트를 입력창에 덮어씁니다.")
 
+                        add_remove_btn = ttk.Button(btn_container, width=6)
+                        add_remove_btn.pack(side=tk.LEFT, padx=(4,0))
+                        
+                        if p_key in self.added_preset_keys:
+                            add_remove_btn.config(text="제거", command=lambda pk=p_key, p_prompt=pprompt, btn=add_remove_btn: self.remove_preset_from_prompt(pk, p_prompt, btn))
+                            tooltip_text = "현재 프롬프트에서 이 프리셋을 제거합니다."
+                        else:
+                            add_remove_btn.config(text="추가", command=lambda pk=p_key, p_prompt=pprompt, btn=add_remove_btn: self.add_preset_to_prompt(pk, p_prompt, btn))
+                            tooltip_text = "현재 프롬프트에 이 프리셋을 추가합니다."
+                        
+                        self.add_remove_tooltips[p_key] = Tooltip(add_remove_btn, tooltip_text) # Store tooltip instance
         self.update_select_all_button_text()
 
     def _on_group_toggle(self, group_key):
@@ -615,10 +645,13 @@ class App(tk.Tk):
         self.filter_presets()
 
     def _load_prompt_into_entry(self, prompt):
-        self.prompt_entry.delete(0, tk.END)
-        self.prompt_entry.insert(0, prompt)
+        self.prompt_entry.set_text(prompt)
         # 로드 시 미리보기도 갱신
         self.show_preset_preview(prompt)
+        # 덮어쓰기는 추가된 프리셋 상태를 초기화하고 UI를 새로고침하여 모든 버튼을 '추가'로 되돌림
+        if self.added_preset_keys:
+            self.added_preset_keys.clear()
+            self.filter_presets()
 
     def show_preset_preview(self, prompt):
         self.preview_text.config(state='normal')
@@ -721,6 +754,11 @@ class App(tk.Tk):
         return ''
 
     def execute_generation_task(self, tasks, model_name, model_version, lora_str, headless):
+        total_tasks = len(tasks)
+        if total_tasks > 0:
+            self.after(0, lambda: self.progress_bar.config(maximum=total_tasks, value=0))
+            self.after(0, lambda: self.progress_bar.grid())
+
         try:
             # --- 1. Get Target Config from GUI ---
             target_model_name = model_name
@@ -792,6 +830,9 @@ class App(tk.Tk):
                     self.after(100, self.load_generated_image, image_paths[-1])
                 else:
                     print(f"작업 '{name}'에 대한 이미지 생성 실패.")
+                
+                # Update progress bar after task completion
+                self.after(0, lambda i=i: self.progress_bar.config(value=i + 1))
 
             print("\n모든 작업 완료.")
             if all_generated_files:
@@ -800,6 +841,9 @@ class App(tk.Tk):
         except Exception as e:
             print(f"생성 작업 중 오류 발생: {e}")
             self.after(100, lambda e=e: messagebox.showerror("실행 오류", f"매크로 실행 중 오류가 발생했습니다:\n{e}"))
+        finally:
+            if total_tasks > 0:
+                self.after(0, lambda: self.progress_bar.grid_remove())
 
     def start_batch_macro(self):
         tasks = self._gather_selected_presets_with_names()
@@ -1374,14 +1418,12 @@ class App(tk.Tk):
         button_frame.pack(fill=tk.X, pady=5)
 
         self.run_button = ttk.Button(button_frame, text="현재 프롬프트 실행", command=self.start_single_macro)
-        self.run_button.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        self.run_button.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 2))
         Tooltip(self.run_button, "오른쪽 입력창의 프롬프트를 사용하여 이미지를 생성합니다.")
 
-
-
-        merge_all_btn = ttk.Button(button_frame, text="전체 병합", command=self.open_merge_all_dialog)
-        merge_all_btn.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(6, 2))
-        Tooltip(merge_all_btn, "선택한 프리셋들을 현재 프롬프트와 병합하여 하나의 프롬프트로 만듭니다.")
+        inspect_btn = ttk.Button(button_frame, text="적용된 프리셋 검사", command=self.inspect_applied_presets)
+        inspect_btn.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(2, 2))
+        Tooltip(inspect_btn, "현재 프롬프트에 어떤 프리셋의 내용이 포함되어 있는지 검사합니다.")
 
         merge_each_btn = ttk.Button(button_frame, text="개별 병합 실행", command=self.open_merge_each_dialog)
         merge_each_btn.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(2, 0))
@@ -1402,6 +1444,11 @@ class App(tk.Tk):
         image_frame.grid(row=0, column=1, sticky="nsew", padx=(5, 0))
         self.image_label = ttk.Label(image_frame, text="실행 시 여기에 이미지가 표시됩니다.", anchor="center")
         self.image_label.pack(fill=tk.BOTH, expand=True)
+
+        self.style.configure("green.Horizontal.TProgressbar", background='#4CAF50') # A nice green
+        self.progress_bar = ttk.Progressbar(output_frame, mode='determinate', style="green.Horizontal.TProgressbar")
+        self.progress_bar.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(5,0))
+        self.progress_bar.grid_remove() # Hide it initially
 
 
 
@@ -1464,14 +1511,64 @@ class App(tk.Tk):
         except Exception as e:
             self.image_label.config(text=f"이미지 로드 실패:\n{e}")
 
-
-    # -------------------- 병합 기능 구현 --------------------
     def _tokenize_prompt(self, prompt_str):
-        # 쉼표로 분리하고 앞뒤 공백 제거, 빈 항목 제거
-        if not prompt_str:
-            return []
-        parts = [p.strip() for p in prompt_str.split(',')]
-        return [p for p in parts if p]
+        if not prompt_str: return []
+        return [p.strip() for p in prompt_str.split(',') if p.strip()]
+
+    def _join_tokens(self, tokens):
+        return ', '.join(tokens)
+
+    def add_preset_to_prompt(self, preset_key, preset_prompt, button):
+        current_tokens = self._tokenize_prompt(self.prompt_entry.get())
+        preset_tokens = self._tokenize_prompt(preset_prompt)
+        
+        # Add only new tokens, preserving order
+        new_tokens = [t for t in preset_tokens if t not in current_tokens]
+        final_tokens = current_tokens + new_tokens
+        
+        self.prompt_entry.set_text(self._join_tokens(final_tokens))
+        self.added_preset_keys.add(preset_key)
+        
+        button.config(text="제거", command=lambda: self.remove_preset_from_prompt(preset_key, preset_prompt, button))
+        self.add_remove_tooltips[preset_key].update_text("현재 프롬프트에서 이 프리셋을 제거합니다.")
+        self.add_remove_tooltips[preset_key].hide_tooltip() # Hide it immediately
+
+    def remove_preset_from_prompt(self, preset_key, preset_prompt, button):
+        current_tokens = self._tokenize_prompt(self.prompt_entry.get())
+        preset_tokens_to_remove = set(self._tokenize_prompt(preset_prompt))
+        
+        final_tokens = [t for t in current_tokens if t not in preset_tokens_to_remove]
+        
+        self.prompt_entry.set_text(self._join_tokens(final_tokens))
+        self.added_preset_keys.discard(preset_key)
+        
+        button.config(text="추가", command=lambda: self.add_preset_to_prompt(preset_key, preset_prompt, button))
+        self.add_remove_tooltips[preset_key].update_text("현재 프롬프트에 이 프리셋을 추가합니다.")
+        self.add_remove_tooltips[preset_key].hide_tooltip() # Hide it immediately
+
+    def inspect_applied_presets(self, *args):
+        current_prompt_text = self.prompt_entry.get()
+        if not current_prompt_text:
+            messagebox.showinfo("프롬프트 검사", "현재 프롬프트가 비어 있습니다.", parent=self)
+            return
+
+        current_tokens = set(self._tokenize_prompt(current_prompt_text))
+        applied_presets = []
+
+        for group in self.presets.get("groups", []):
+            for preset in group.get("presets", []):
+                preset_tokens = self._tokenize_prompt(preset.get("prompt", ""))
+                if not preset_tokens:
+                    continue
+                
+                if all(token in current_tokens for token in preset_tokens):
+                    applied_presets.append(f"- {group.get('name')} / {preset.get('name')}")
+
+        if not applied_presets:
+            messagebox.showinfo("프롬프트 검사", "현재 프롬프트와 일치하는 프리셋을 찾지 못했습니다.", parent=self)
+        else:
+            message = "다음 프리셋의 내용이 포함된 것으로 보입니다:\n\n" + "\n".join(applied_presets)
+            messagebox.showinfo("프롬프트 검사", message, parent=self)
 
     def _unique_preserve_order(self, items):
         seen = set()
@@ -1481,10 +1578,6 @@ class App(tk.Tk):
                 seen.add(it)
                 out.append(it)
         return out
-
-    def _gather_selected_prompts(self):
-        selected_presets = self._gather_selected_presets_with_names()
-        return [prompt for name, prompt in selected_presets]
 
     def open_merge_each_dialog(self):
         selected_presets = self._gather_selected_presets_with_names()
@@ -1546,86 +1639,6 @@ class App(tk.Tk):
         dlg.grab_set()
         self.wait_window(dlg)
 
-    def open_merge_all_dialog(self):
-        selected_prompts = self._gather_selected_prompts()
-        if not selected_prompts:
-            return messagebox.showwarning("선택 오류", "병합할 프리셋을 하나 이상 선택하세요.")
-
-        # 선택된 프롬프트들을 앞쪽에 배치. 중복 제거.
-        selected_tokens = []
-        for sp in selected_prompts:
-            selected_tokens.extend(self._tokenize_prompt(sp))
-        selected_tokens = self._unique_preserve_order(selected_tokens)
-
-        original_prompt = self.prompt_entry.get().strip()
-        original_tokens = self._tokenize_prompt(original_prompt)
-
-        # 병합: 선택된 토큰 먼저, 그다음 원본 중 중복되지 않는 항목
-        merged_tokens = selected_tokens + [t for t in original_tokens if t not in selected_tokens]
-        merged_text = ', '.join(merged_tokens)
-        selected_text_combined = ', '.join(selected_tokens)
-
-        # 모달 UI
-        dlg = tk.Toplevel(self)
-        dlg.title("프롬프트 병합")
-        dlg.geometry("900x500") # 높이 조정
-
-        # --- 하단 버튼 프레임 ---
-        btn_frame = ttk.Frame(dlg)
-        btn_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=8, pady=8)
-
-        # --- 상단 좌/우 프레임 ---
-        top_lr_frame = ttk.Frame(dlg)
-        top_lr_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=0, pady=0)
-
-        left_frame = ttk.LabelFrame(top_lr_frame, text="선택된 프롬프트 (좌측)", padding=6)
-        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(6,3), pady=6)
-
-        right_frame = ttk.LabelFrame(top_lr_frame, text="원본 프롬프트 (우측)", padding=6)
-        right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(3,6), pady=6)
-
-        # --- 중간 미리보기 프레임 ---
-        center_frame = ttk.LabelFrame(dlg, text="병합 미리보기", padding=6)
-        center_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True, padx=6, pady=6)
-
-        # --- 텍스트 위젯 ---
-        left_txt = tk.Text(left_frame, wrap=tk.WORD, height=8)
-        left_txt.pack(fill=tk.BOTH, expand=True)
-        left_txt.insert('1.0', selected_text_combined)
-        left_txt.config(state='disabled')
-
-        right_txt = tk.Text(right_frame, wrap=tk.WORD, height=8)
-        right_txt.pack(fill=tk.BOTH, expand=True)
-        right_txt.insert('1.0', original_prompt)
-        right_txt.config(state='disabled')
-
-        center_txt = tk.Text(center_frame, wrap=tk.WORD, height=8)
-        center_txt.pack(fill=tk.BOTH, expand=True)
-        center_txt.insert('1.0', merged_text)
-        # center is preview but editable so user can tweak before 적용
-
-        # --- 버튼 로직 및 배치 ---
-        def apply_merged():
-            new_val = center_txt.get('1.0', tk.END).strip()
-            # 재처리: 쉼표로 분리 후 중복 제거하여 깔끔하게 저장
-            merged_tokens = self._unique_preserve_order(self._tokenize_prompt(new_val))
-            final_text = ', '.join(merged_tokens)
-            self.prompt_entry.delete(0, tk.END)
-            self.prompt_entry.insert(0, final_text)
-            # 갱신 미리보기
-            self.show_preset_preview(final_text)
-            dlg.destroy()
-
-        def cancel():
-            dlg.destroy()
-
-        apply_btn = ttk.Button(btn_frame, text="적용", command=apply_merged)
-        apply_btn.pack(side=tk.RIGHT, padx=6)
-        cancel_btn = ttk.Button(btn_frame, text="취소", command=cancel)
-        cancel_btn.pack(side=tk.RIGHT)
-
-        dlg.transient(self); dlg.grab_set(); self.wait_window(dlg)
-
     def on_booster_toggle(self, booster_name, var):
         is_enabled = var.get()
         action = "추가" if is_enabled else "제거"
@@ -1674,6 +1687,10 @@ class App(tk.Tk):
 
     def on_crawler_started(self, exception: Exception | None):
         """Callback executed when crawler initialization is complete."""
+        self.progress_bar.stop()
+        self.progress_bar.grid_remove()
+        self.progress_bar.config(mode='determinate') # Reset for generation
+
         self.set_ui_state(False)  # Re-enable UI
         self.update_booster_ui_state()
         if exception:
@@ -1681,6 +1698,7 @@ class App(tk.Tk):
             messagebox.showerror("크롤러 오류", f"크롤러 초기화에 실패했습니다:\n{exception}")
         else:
             print("크롤러가 준비되었습니다.")
+            messagebox.showinfo("초기화 완료", "크롤러가 준비되었습니다.")
             if not self.headless_var.get():
                 self.sync_booster_ui_from_page()
 
@@ -1695,8 +1713,12 @@ class App(tk.Tk):
             self.update_booster_ui_state()
             return
 
-        print(f"Headless 모드 변경: {mode}. 크롤러를 재시작합니다...")
+        messagebox.showinfo("재시작", f"Headless 모드 변경: {mode}. 크롤러를 재시작합니다.")
         self.set_ui_state(True) # Disable UI
+
+        self.progress_bar.config(mode='indeterminate')
+        self.progress_bar.grid()
+        self.progress_bar.start()
 
         def restart_task():
             try:
@@ -1717,6 +1739,10 @@ class App(tk.Tk):
 
     def on_crawler_restarted(self, exception: Exception | None):
         """Callback executed when crawler has been restarted."""
+        self.progress_bar.stop()
+        self.progress_bar.grid_remove()
+        self.progress_bar.config(mode='determinate') # Reset for generation
+
         self.set_ui_state(False) # Re-enable UI
         self.update_booster_ui_state()
         if exception:
@@ -1724,13 +1750,19 @@ class App(tk.Tk):
             messagebox.showerror("크롤러 오류", f"크롤러 재시작에 실패했습니다:\n{exception}")
         else:
             print("크롤러가 새로운 설정으로 준비되었습니다.")
+            messagebox.showinfo("재시작 완료", "크롤러가 새로운 설정으로 준비되었습니다.")
             if not self.headless_var.get():
                 self.sync_booster_ui_from_page()
 
     def start_crawler(self):
         """Starts the crawler manager after the GUI has loaded."""
-        print("크롤러 초기화를 시작합니다...")
+        messagebox.showinfo("초기화 시작", "크롤러 초기화를 시작합니다. 잠시만 기다려주세요.")
         self.set_ui_state(True)  # Disable UI during initialization
+
+        self.progress_bar.config(mode='indeterminate')
+        self.progress_bar.grid() # Show progress bar
+        self.progress_bar.start()
+
         # The callback needs to run in the main thread.
         # The `on_done` will be called from the background thread.
         callback = lambda e: self.after(0, self.on_crawler_started, e)

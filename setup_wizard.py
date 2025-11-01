@@ -5,7 +5,7 @@ import subprocess
 import os
 import sys
 import asyncio
-import json
+import shutil
 
 # crawler.py와 gui.py의 경로 설정을 일관성 있게 가져옵니다.
 try:
@@ -18,7 +18,11 @@ except ImportError:
 # 경로 설정
 USER_DATA = os.path.join(os.getenv("APPDATA") or os.path.expanduser("~"), "PixAI-Gen-Bot", "playwright_user_data")
 FLAG_FILE = os.path.join(USER_DATA, '.setup_complete')
-BASE = os.path.abspath(os.path.dirname(sys.executable if getattr(sys, 'frozen', False) else __file__))
+
+if getattr(sys, 'frozen', False):
+    BASE = os.path.dirname(sys.executable)
+else:
+    BASE = os.path.abspath(os.path.dirname(__file__))
 
 class SetupWizard(tk.Tk):
     def __init__(self):
@@ -57,19 +61,18 @@ class SetupWizard(tk.Tk):
 
     def run_setup(self):
         try:
-            self.log("--- 1/2: 브라우저 설치 확인 ---")
-            if not self.ensure_chromium_installed():
+            self.log("--- 1/2: 브라우저 설치 ---")
+            if not self.install_chromium():
                 raise Exception("브라우저 설치에 실패했습니다.")
             
-            self.log("\n--- 2/2: 사용자 로그인 설정 ---")
-            if not self.run_user_login_setup():
-                raise Exception("사용자 로그인 설정에 실패했습니다.")
+            # self.log("\n--- 2/2: 사용자 로그인 설정 ---")
+            # if not self.run_user_login_setup():
+            #     raise Exception("사용자 로그인 설정에 실패했습니다.")
 
             self.log("\n--- 설정 완료 ---")
             with open(FLAG_FILE, 'w') as f:
                 f.write('done')
-            self.log("모든 설정이 완료되었습니다. 1초 후 메인 프로그램을 시작합니다.")
-            self.after(1000, self.launch_main_app)
+            self.after(100, self.launch_main_app)
 
         except Exception as e:
             error_message = f"\n오류: 설정에 실패했습니다.\n{e}"
@@ -80,43 +83,54 @@ class SetupWizard(tk.Tk):
 
     def launch_main_app(self):
         self.destroy()
-        # bootstrap.py와 동일한 방식으로 gui.py 실행
-        script_path = os.path.join(BASE, "gui.py")
-        executable_path = os.path.join(BASE, "gui.exe")
-        if getattr(sys, 'frozen', False) and os.path.exists(executable_path):
-            subprocess.Popen([executable_path])
-        else:
-            subprocess.Popen([sys.executable, script_path])
-
-    def ensure_chromium_installed(self):
+        # 설정이 완료되었으므로 애플리케이션을 재시작하여 메인 GUI를 로드합니다.
         try:
-            is_windows = sys.platform == "win32"
-            self.log("설치된 브라우저 정보를 확인합니다...")
-            result = subprocess.run(
-                [sys.executable, "-m", "playwright", "print-browsers-json"],
-                check=True, capture_output=True, text=True, encoding='utf-8', shell=is_windows
-            )
-            browsers_data = json.loads(result.stdout)
-            chromium_installed = any(
-                b['name'] == 'chromium' and b.get('install')
-                for b in browsers_data.get('browsers', [])
-            )
+            # 현재 실행 파일 경로로 재시작
+            os.execl(sys.executable, *sys.argv)
+        except Exception as e:
+            messagebox.showerror("재시작 실패", f"프로그램을 재시작하는 데 실패했습니다. 수동으로 다시 시작해주세요.\n오류: {e}")
+            sys.exit(1)
 
-            if not chromium_installed:
-                self.log("Chromium 브라우저가 없습니다. 다운로드를 시작합니다 (몇 분 소요될 수 있습니다).")
-                install_command = [sys.executable, "-m", "playwright", "install", "chromium"]
-                process = subprocess.Popen(install_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding='utf-8', shell=is_windows)
-                for line in iter(process.stdout.readline, ''):
-                    self.log(line.strip())
-                process.wait()
-                if process.returncode != 0:
-                    raise subprocess.CalledProcessError(process.returncode, install_command)
-                self.log("Chromium 브라우저 설치가 완료되었습니다.")
+    def install_chromium(self):
+        try:
+            # frozen(EXE)일 때 sys.executable로 다시 호출하면 재귀 발생.
+            # 따라서 frozen이면 시스템 파이썬을 먼저 찾고, 없으면 플레이라이트 API로 설치 시도.
+            if getattr(sys, "frozen", False):
+                python_cmd = shutil.which("python") or shutil.which("py")
             else:
-                self.log("Chromium 브라우저가 이미 설치되어 있습니다.")
+                python_cmd = sys.executable
+
+            if python_cmd is None:
+                # 시스템 파이썬이 없으면 파이썬 API 직접 호출(플레이라이트 내부 API는 변경될 수 있음)
+                try:
+                    from playwright.__main__ import main as pw_main
+                    pw_main(["install", "chromium"])
+                    return True
+                except Exception as e:
+                    self.log(f"시스템 Python 없음 및 Playwright API 호출 실패: {e}")
+                    return False
+
+            self.log("Chromium 브라우저 다운로드를 시작합니다 (몇 분 소요될 수 있습니다).")
+            install_cmd = [python_cmd, "-m", "playwright", "install", "chromium"]
+            proc = subprocess.Popen(
+                install_cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding='utf-8',
+                shell=False
+            )
+            # 실시간 로그 표출
+            for line in iter(proc.stdout.readline, ""):
+                if line:
+                    self.log(line.rstrip())
+            proc.wait()
+            if proc.returncode != 0:
+                raise subprocess.CalledProcessError(proc.returncode, install_cmd)
+            self.log("Chromium 브라우저 설치가 완료되었습니다.")
             return True
         except Exception as e:
-            self.log(f"브라우저 확인/설치 중 오류: {e}")
+            self.log(f"브라우저 설치 중 오류: {e}")
             return False
 
     def run_user_login_setup(self):

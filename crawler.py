@@ -7,6 +7,11 @@ from playwright.async_api import async_playwright, Page, BrowserContext
 from playwright_stealth import Stealth
 import re
 import difflib
+import sys
+
+if getattr(sys, 'frozen', False):
+    # When running as a bundled app, tell Playwright to use the browsers installed in the user's AppData
+    os.environ['PLAYWRIGHT_BROWSERS_PATH'] = os.path.join(os.path.expanduser("~"), "AppData", "Local", "ms-playwright")
 
 class Logger:
     """Simple hierarchical logger with Unicode box drawing characters"""
@@ -106,6 +111,15 @@ class LogContext:
 
 # Create global logger instance
 log = Logger()
+
+if getattr(sys, 'frozen', False):
+    # PyInstaller 환경
+    script_dir = os.path.dirname(sys.executable)
+    bundle_dir = sys._MEIPASS  # 압축 해제된 임시 폴더
+else:
+    # 개발 환경
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    bundle_dir = script_dir
 
 # --- Constants and Setup ---
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -217,8 +231,6 @@ class PixaiCrawler:
                 
                 # Check for the presence of 'user_token' and 'user_token_expire_at'
                 cookie_names = {cookie['name'] for cookie in cookies}
-                print(cookie_names)
-                
                 has_token = 'user_token' in cookie_names
                 has_expire_at = 'user_token_expire_at' in cookie_names
 
@@ -278,6 +290,16 @@ class PixaiCrawler:
                 if p: await p.stop()
 
     async def __aenter__(self):
+        if getattr(sys, 'frozen', False):
+            playwright_browsers_path = os.environ.get('PLAYWRIGHT_BROWSERS_PATH')
+            log.info(f"PLAYWRIGHT_BROWSERS_PATH: {playwright_browsers_path}")
+            if playwright_browsers_path and os.path.isdir(playwright_browsers_path):
+                log.info(f"Contents of {playwright_browsers_path}:")
+                for item in os.listdir(playwright_browsers_path):
+                    log.info(f"- {item}")
+            else:
+                log.warning("PLAYWRIGHT_BROWSERS_PATH is not set or not a directory.")
+
         # 0. Verify existing user data if it exists, and clean up if invalid.
         await self._verify_login_and_cleanup()
 
