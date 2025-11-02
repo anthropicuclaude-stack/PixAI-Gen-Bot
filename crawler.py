@@ -259,6 +259,7 @@ class PixaiCrawler:
             try:
                 p = await async_playwright().start()
                 context = await p.chromium.launch_persistent_context(self.USER_DATA_DIR, headless=True)
+                await self._apply_stealth(context)
                 page = await context.new_page()
                 await page.goto(url, timeout=60000, wait_until="domcontentloaded")
 
