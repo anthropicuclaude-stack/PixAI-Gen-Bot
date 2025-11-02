@@ -24,7 +24,7 @@
     };
 
     const disableSocialLogins = () => {
-        const socialKeys = ["google", "discord", "twitter", "x"];
+        const socialKeys = ["google"];
         const buttons = Array.from(document.querySelectorAll('form button[type="button"], form button, button'));
         let changed = false;
         buttons.forEach(btn => {
